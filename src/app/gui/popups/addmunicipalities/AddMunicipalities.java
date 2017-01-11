@@ -21,7 +21,7 @@ public class AddMunicipalities extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("gui/addMunicipalities.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("app/gui/popups/addmunicipalities/AddMunicipalities.fxml"));
         primaryStage.setTitle("Add municipality");
         primaryStage.setScene(new Scene(root, 400, 150));
         primaryStage.show();

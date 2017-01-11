@@ -1,5 +1,7 @@
 package db;
 
+import elements.Visitor;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +77,13 @@ public class DbHandler {
         }
     }
 
-    public void addVisitor(String date, String name, String municipality, boolean copies, boolean mail, boolean taxes, boolean others) {
+    public void addVisitor(String date,
+                           String name,
+                           String municipality,
+                           boolean copies,
+                           boolean mail,
+                           boolean taxes,
+                           boolean others) {
         try {
             this.connect();
             statement = c.createStatement();
@@ -138,5 +146,33 @@ public class DbHandler {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void updateVisitor(Visitor oldVisitor, Visitor newVisitor) {
+        try{
+            this.connect();;
+            statement = c.createStatement();
+            c.setAutoCommit(false);
+
+            String sql = "update visitorlist set name = \"" + newVisitor.getName()
+                    + "\", municipality = \"" + newVisitor.getMunicipality()
+                    + "\", copies = \"" + newVisitor.getCopies()
+                    + "\", mail = \"" + newVisitor.getMail()
+                    + "\", taxes = \"" + newVisitor.getTaxes()
+                    + "\", others = \"" + newVisitor.getOthers()
+                    + "\" where name = \"" + oldVisitor.getName()
+                    + "\" and municipality = \"" + oldVisitor.getMunicipality()
+                    + "\" and copies = \"" + oldVisitor.getCopies()
+                    + "\" and mail = \"" + oldVisitor.getMail()
+                    + "\" and taxes = \""  + oldVisitor.getTaxes()
+                    + "\" and others = \""  + oldVisitor.getOthers() + "\"";
+
+            statement.executeUpdate(sql);
+            statement.close();
+            c.commit();
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

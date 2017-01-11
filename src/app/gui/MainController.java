@@ -1,10 +1,12 @@
 package app.gui;
 
+import app.gui.popups.editvisitor.EditVisitorController;
 import db.DbHandler;
 import elements.Visitor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,9 +14,14 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import javax.swing.border.StrokeBorder;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,6 +49,12 @@ public class MainController {
     public BarChart reasonsBarChart;
     public BarChart municipalityBarChart;
 
+    @FXML
+    public void initialize() {
+        populateList();
+        populateMuniCBox();
+    }
+
     public void addVisitor(ActionEvent e) {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -51,7 +64,7 @@ public class MainController {
             db.addVisitor(dateFormatted, nameTextField.getText(), muniCombo.getSelectionModel().getSelectedItem(), copiesCBox.isSelected(), mailCBox.isSelected(), taxesCBox.isSelected(), otherCBox.isSelected());
             clearButtons();
         } else {
-
+            // TODO: color field and border red to indicate a name's required.
         }
         visitorTableView.refresh();
         populateList();
@@ -111,13 +124,12 @@ public class MainController {
         Parent root;
 
         stage = new Stage();
-        root = FXMLLoader.load(getClass().getResource("popups/addmunicipalities/addMunicipalities.fxml"));
+        root = FXMLLoader.load(getClass().getResource("popups/addmunicipalities/AddMunicipalities.fxml"));
         stage.setScene(new Scene(root));
         stage.setTitle("Add municipality");
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(addMuniBtn.getScene().getWindow());
         stage.show();
-
     }
 
     public void populateMuniCBox() {
@@ -199,19 +211,23 @@ public class MainController {
         populateMunicipalityBarChart();
     }
 
-    public void editVisitorStart() {
-        int row = visitorTableView.getSelectionModel().getSelectedCells().get(0).getRow();
+    public void editVisitorStart() throws IOException {
+        Stage stage;
+        stage = new Stage();
 
-        editVisitorCommit(row);
-    }
-
-    public void editVisitorCommit(int row) {
-        String sql = "update visitorlist set name = \"" + nameCol.getCellData(row) + "\","
-                + " municipality = \"" + muniCol.getCellData(row) + "\","
-                + " copies = \"" + copiesCol.getCellData(row) + "\","
-                + " mail = \"" + mailCol.getCellData(row) + "\","
-                + " taxes = \"" + taxesCol.getCellData(row) + "\","
-                + " others = \"" + othersCol.getCellData(row) + "\"";
-        System.out.println(sql);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("popups/editvisitor/EditVisitor.fxml"));
+        EditVisitorController controller = new EditVisitorController(visitorTableView.getSelectionModel().getSelectedItem().getName(),
+                visitorTableView.getSelectionModel().getSelectedItem().getMunicipality(),
+                visitorTableView.getSelectionModel().getSelectedItem().getCopies(),
+                visitorTableView.getSelectionModel().getSelectedItem().getMail(),
+                visitorTableView.getSelectionModel().getSelectedItem().getTaxes(),
+                visitorTableView.getSelectionModel().getSelectedItem().getOthers(),
+                this);
+        loader.setController(controller);
+        GridPane gridPane = loader.load();
+        stage.setScene(new Scene(gridPane));
+        stage.setTitle("Edit visitor");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.show();
     }
 }

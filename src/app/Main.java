@@ -1,8 +1,6 @@
 package app;
 
-import app.gui.MainController;
 import db.DbHandler;
-import elements.Visitor;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,12 +14,7 @@ public class Main extends Application {
         DbHandler db = new DbHandler("Voeren2000.db");
         db.createTable();
 
-        FXMLLoader loader = new FXMLLoader(Main.class.getResource("/app/gui/visitorList.fxml"));
-        Parent root = loader.load();
-        MainController MainController = loader.getController();
-        MainController.populateList();
-        MainController.populateMuniCBox();
-
+        Parent root = FXMLLoader.load(getClass().getResource("/app/gui/VisitorList.fxml"));
         primaryStage.setTitle("Voeren 2000");
         primaryStage.setScene(new Scene(root, 1280, 720));
         primaryStage.setMinHeight(720);
